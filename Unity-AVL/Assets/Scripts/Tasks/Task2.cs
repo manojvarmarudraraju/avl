@@ -12,10 +12,6 @@ public class Task2 : TaskInterface
     public bool isBrown(DeviceRegistry devices){
         for(int i=3; i<4;i++){
             for(int j=8; j<11; j++){
-
-                Debug.Log($"{i} - {j} - 0 -{devices.pixels[i,j,0]}");
-                Debug.Log($"{i} - {j} - 1 -{devices.pixels[i,j,1]}");
-                Debug.Log($"{i} - {j} - 2 -{devices.pixels[i,j,2]}");
                 if(devices.pixels[i,j,0] != 101) return false;
                 if(devices.pixels[i,j,1] != 33) return false;
                 if(devices.pixels[i,j,2] != 0) return false;
@@ -35,22 +31,33 @@ public class Task2 : TaskInterface
         return true;
     }
 
+    public bool isFarGreen(DeviceRegistry devices){
+        for(int i=4; i<5;i++){
+            for(int j=8; j<11; j++){
+                if(devices.pixels[i,j,0] != 0) return false;
+                if(devices.pixels[i,j,2] != 27) return false;
+            }
+        }
+        return true;
+    }
+
     public void Execute(DeviceRegistry devices) {
         if(once == 2 && devices.microphone[0] == 0 && isBrown(devices)){
             Debug.Log("Second brown");
+            
             devices.speedControl[0] = 1f;
             devices.speedControl[1] = 4f;
-        }else if(once ==0 &&isBlue(devices)){
+        }else if(isFarGreen(devices) && devices.compass[0] >= -90.25 && devices.compass[0] <= -89.75){
             Debug.Log("First Blue");
             once = 1;
         }
-        else if(once == 1 && devices.microphone[0] == 41 && isBlue(devices)){
+        else if(once == 1 && devices.microphone[0] == 41 && isBlue(devices) && devices.compass[0] >= -0.25 && devices.compass[0] <= 0.25){
             Debug.Log("bridge up");
             once = 2;
             devices.speedControl[0] = 1f;
             devices.speedControl[1] = 0f;
         }
-         else if(once == 1 && devices.microphone[0] == 0 && isBrown(devices)){
+         else if(once == 1 && devices.microphone[0] == 0 && isBrown(devices) && devices.compass[0] >= -0.25 && devices.compass[0] <= 0.25){
             Debug.Log("first brown");
             devices.speedControl[0] = 1f;
             devices.speedControl[1] = 0f;

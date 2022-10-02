@@ -23,9 +23,6 @@ public class Task1 : TaskInterface
         
         for(int i=6; i<7;i++){
             for(int j=6; j<9; j++){
-                Debug.Log($"{i} - {j} - 0 -{devices.pixels[i,j,0]}");
-                Debug.Log($"{i} - {j} - 1 -{devices.pixels[i,j,1]}");
-                Debug.Log($"{i} - {j} - 2 -{devices.pixels[i,j,2]}");
                 if(devices.pixels[i,j,0] != 120) return false;
                 if(devices.pixels[i,j,1] != 120) return false;
                 if(devices.pixels[i,j,2] != 120) return false;
@@ -47,10 +44,6 @@ public class Task1 : TaskInterface
     public bool isFarGreen(DeviceRegistry devices){
         for(int i=4; i<5;i++){
             for(int j=8; j<11; j++){
-
-                Debug.Log($"{i} - {j} - 0 -{devices.pixels[i,j,0]}");
-                Debug.Log($"{i} - {j} - 1 -{devices.pixels[i,j,1]}");
-                Debug.Log($"{i} - {j} - 2 -{devices.pixels[i,j,2]}");
                 if(devices.pixels[i,j,0] != 0) return false;
                 if(devices.pixels[i,j,2] != 27) return false;
             }
