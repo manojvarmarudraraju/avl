@@ -6,105 +6,55 @@ public class Task1 : TaskInterface
 {
 
     float current;
-    int rotation;
-    bool goStraight;
-    bool done;
-    int turn;
     public Task1(){
         current = 0;
-        rotation = 1;
-        goStraight = true;
-        done  = false;
-        turn = 0;
-    }
-
-
-    public bool colorCheck(DeviceRegistry devices){
-        
-        for(int i=6; i<7;i++){
-            for(int j=6; j<9; j++){
-                if(devices.pixels[i,j,0] != 120) return false;
-                if(devices.pixels[i,j,1] != 120) return false;
-                if(devices.pixels[i,j,2] != 120) return false;
-            }
-        }
-        return true;
-    }
-
-    public bool isGreen(DeviceRegistry devices){
-        for(int i=6; i<7;i++){
-            for(int j=6; j<9; j++){
-                if(devices.pixels[i,j,0] != 0) return false;
-                if(devices.pixels[i,j,2] != 27) return false;
-            }
-        }
-        return true;
-    }
-
-    public bool isFarGreen(DeviceRegistry devices){
-        for(int i=4; i<5;i++){
-            for(int j=8; j<11; j++){
-                if(devices.pixels[i,j,0] != 0) return false;
-                if(devices.pixels[i,j,2] != 27) return false;
-            }
-        }
-        return true;
     }
     
     public void Execute(DeviceRegistry devices) {
-        
-        devices.memory[0] = 0f;
-        Debug.Log($"Siren: {devices.microphone[0]}");
-        if(rotation == 1 && (devices.compass[0] >= (current+0.25) || devices.compass[0] <= (current-0.25))) {
-            // Debug.Log($"Not north {devices.compass[0]} ---- {current}");
+        Debug.Log($"Initial: {devices.microphone[0]}");
+        if(devices.memory[0] == 0f && devices.gps[1] > 27){
+            current = 180;
+            devices.memory[0] = 2f;
+        } else if(devices.memory[0] == 0f && devices.gps[1] < 26){
+            current = 0;
+            devices.memory[0] = 2f;
+        }
+
+        if(devices.memory[1] < 4f && devices.compass[0] >= (current+0.25) || devices.compass[0] <= (current-0.25)){
             devices.speedControl[0] = 1f;
             devices.speedControl[1] = 0f;
             devices.brakeControl[0] = 1f;
             devices.brakeControl[1] = 2f;
             devices.steeringControl[0] = 1f;
             devices.steeringControl[1] = -0.25f;
-        } 
-        else {
-            rotation = 0;
-            devices.brakeControl[0] = 1f;
-            devices.brakeControl[1] = 0f;
-            devices.steeringControl[0] = 1f;
-            devices.steeringControl[1] = 0f;
-            if(!done){
-            if(rotation == 0 && goStraight){
-                devices.speedControl[0] = 1f;
-                devices.speedControl[1] = 3f;
-            }
-
-            if(turn ==0 && isGreen(devices)){
-                Debug.Log($"Near Green");
-                rotation = 1;
-                current = -90;
+        } else if(devices.memory[0] != 3f) {
+            Debug.Log($"Initial done {current}");
+            if(devices.gps[1] <= 27 && devices.gps[1] >= 26){
+                Debug.Log($"current done");
+                current = 90;
                 devices.speedControl[0] = 1f;
                 devices.speedControl[1] = 0f;
                 devices.brakeControl[0] = 1f;
+                devices.brakeControl[1] = 2f;
+                devices.memory[0] = 3f;    
+            } else {
+                devices.speedControl[0] = 1f;
+                devices.speedControl[1] = 1f;
+                devices.brakeControl[0] = 1f;
                 devices.brakeControl[1] = 0f;
-                goStraight = true;
-                //done = true;
-                devices.memory[0] = 1f;
-                turn = 1;
             }
-            if(turn == 1 && isFarGreen(devices)){
-
-                    Debug.Log($"Far Green");
-                    rotation = 1;
-                    current = 0;
-                    goStraight = false;
-                    devices.speedControl[0] = 1f;
-                    devices.speedControl[1] = 0f;
-                    devices.brakeControl[0] = 1f;
-                    devices.brakeControl[1] = 0f;
-                }
-            }
+        } else if(devices.gps[0] <= 15.5) {
+            Debug.Log($"{devices.lidar[4]} -> {devices.lidar[5]}");
+            devices.speedControl[0] = 1f;
+            devices.speedControl[1] = 1f;
+            devices.brakeControl[0] = 1f;
+            devices.brakeControl[1] = 0f;
+        } else {
+            devices.memory[0] = 4f;
+            devices.speedControl[0] = 1f;
+            devices.speedControl[1] = 0f;
+            devices.brakeControl[0] = 1f;
+            devices.brakeControl[1] = 2f;
         }
-
-        // if((devices.compass[0]<= 0.25 && devices.compass[0] >= -0.25) || (devices.compass[0] >= -90.25 && devices.compass[0] <= 89.75)){devices.speedControl[0] = 1f;
-        // devices.speedControl[1] = 3f;}
-        // else{devices.speedControl[0] =0f; devices.speedControl[1] = 0f;}
     }
 }
